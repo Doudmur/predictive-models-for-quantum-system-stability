@@ -7,7 +7,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from forecast import TRAIN_DAYS, f_ar1, f_moving_avg, mae
+from pathlib import Path
+
 from simulate import simulate
+
+ROOT = Path(__file__).resolve().parent.parent
 
 BLUE, ORANGE, GRAY, INK, MUTED, BG = "#1F6CAB", "#D9692B", "#8A939C", "#13202E", "#5F6A75", "#F6F5F1"
 plt.rcParams.update({
@@ -49,6 +53,7 @@ ax.set_ylabel("MAE improvement over persistence, %")
 ax.set_xticks(hours)
 ax.set_xlim(2, 34)
 fig.tight_layout()
-fig.savefig("../figures/fig_skill_vs_horizon.png", facecolor=BG)
-json.dump({"hours": hours, **{k: v for k, v in skill.items()}}, open("../results/skill_vs_horizon.json", "w"), indent=1)
+(ROOT / "figures").mkdir(exist_ok=True)
+fig.savefig(ROOT / "figures" / "fig_skill_vs_horizon.png", facecolor=BG)
+json.dump({"hours": hours, **{k: v for k, v in skill.items()}}, open(ROOT / "results" / "skill_vs_horizon.json", "w"), indent=1)
 print("skill vs horizon", {k: [round(x, 3) for x in v] for k, v in skill.items()})

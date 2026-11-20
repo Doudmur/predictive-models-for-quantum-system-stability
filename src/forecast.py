@@ -27,7 +27,11 @@ from sklearn.ensemble import HistGradientBoostingRegressor
 from sklearn.model_selection import KFold
 from statsmodels.tsa.holtwinters import SimpleExpSmoothing
 
+from pathlib import Path
+
 from simulate import simulate, pilot_check
+
+ROOT = Path(__file__).resolve().parent.parent
 
 warnings.filterwarnings("ignore")
 SEED = 2026
@@ -232,14 +236,15 @@ def main():
         point = out["Gradient boosting, lag features"]["forecast"]
         results[f"decision_h{h}"] = decision(y_true, last_cal, point, low)
         if h == 1:
-            np.savez("../results/forecasts_h1.npz", y_true=y_true, last=last_cal, gbm=point,
+            np.savez(ROOT / "results" / "forecasts_h1.npz", y_true=y_true, last=last_cal, gbm=point,
                      low=low, ar1=out["AR(1)"]["forecast"], origins=origins,
                      index=t1_df.index.astype("int64"), t1=t1_df.to_numpy())
 
     results["leakage_shuffled_cv_MAE_us"] = leakage_demo(t1_df)
     results["readout_h1"] = evaluate_readout(ro_df)
 
-    with open("../results/results.json", "w") as f:
+    (ROOT / "results").mkdir(exist_ok=True)
+    with open(ROOT / "results" / "results.json", "w") as f:
         json.dump(results, f, indent=1)
     print(json.dumps(results, indent=1))
 

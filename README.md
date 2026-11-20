@@ -8,12 +8,14 @@ Authors: Kaiyr Zhaniya, Kaiyr Beiimbet
 
 | Path | Content |
 |---|---|
-| `src/oq_calibration.py` | Collector for real calibration documents from the Open Quantum platform (read-only, no jobs submitted) |
+| `src/oq_calibration.py` | Collector for real calibration documents from the Open Quantum platform (read-only, no jobs submitted); keeps every value with its standard error and the provider's capture time |
+| `src/analyze.py` | Pilot analysis of the collected data: re-measurements, device medians, 2σ drift test, qubits to avoid, time-aware readout back-test |
 | `scripts/run_probe.command` | One-click launcher for the collector on macOS |
 | `src/simulate.py` | Synthetic 14-day calibration history for 107 qubits, calibrated to the pilot statistics |
 | `src/forecast.py` | Forecast models, rolling-origin evaluation, MAE/RMSE, and the qubit-exclusion decision |
 | `src/figures.py` | Figure: forecast skill against horizon |
-| `results/` | `results.json` with every number shown on the slides |
+| `tests/test_pipeline.py` | End-to-end check of collector parsing and analysis on synthetic calibration documents |
+| `results/` | `results.json` with every number of the forecasting part |
 | `figures/` | Figures used on the slides |
 | `slides/` | Presentation (PDF) |
 
@@ -55,15 +57,23 @@ Before a 24-hour batch, rank qubits by forecast risk (the 10% lower bound of T1 
 
 ```bash
 pip install -r requirements.txt
-cd src
-python simulate.py     # prints the pilot statistics of the synthetic data
-python forecast.py     # writes ../results/results.json
-python figures.py      # writes ../figures/fig_skill_vs_horizon.png
+python src/simulate.py        # prints the pilot statistics of the synthetic data
+python src/forecast.py        # writes results/results.json
+python src/figures.py         # writes figures/fig_skill_vs_horizon.png
+python tests/test_pipeline.py # checks collector parsing + pilot analysis
 ```
 
 All randomness uses the fixed seed 2026, so the numbers above are reproduced exactly.
 
-To collect real data, put your Open Quantum SDK key in the repository root as `sdk_key.json` (it is git-ignored) and run `bash scripts/run_probe.command`, or call `python src/oq_calibration.py collect --interval-min 30 --hours 168`.
+To collect and analyse real data, put your Open Quantum SDK key in the repository root as `sdk_key.json` (it is git-ignored), then from the repository root:
+
+```bash
+bash scripts/run_probe.command                                   # probe + one poll
+python src/oq_calibration.py collect --interval-min 10 --hours 168   # long run
+python src/analyze.py                                            # results/pilot_results.json, figures/pilot_*.png
+```
+
+The raw calibration snapshots of the pilot run are not included in this repository; the pilot numbers above are from that run and are reproduced by `analyze.py` on newly collected data.
 
 ## Limitations
 
