@@ -1,0 +1,178 @@
+{
+ "seed": 2026,
+ "pilot_check": {
+  "t1_median_us": 26.707029529754582,
+  "t1_rel_change_median": 0.12934519167109665,
+  "t1_rel_change_p90": 0.5715226929840591,
+  "ro_median": 0.9672215056769342,
+  "ro_min": 0.629068372148589,
+  "ro_abs_change_median": 0.004809763623371488
+ },
+ "t1_h1": {
+  "Persistence (last calibration)": {
+   "MAE_us": 6.531858236040293,
+   "RMSE_us": 11.076317359598953,
+   "skill_MAE": 0.0,
+   "skill_RMSE": 0.0
+  },
+  "Moving average, 24 h": {
+   "MAE_us": 9.373700772131588,
+   "RMSE_us": 14.04908388020141,
+   "skill_MAE": -0.4350741295043876,
+   "skill_RMSE": -0.2683894316215307
+  },
+  "Exponential smoothing": {
+   "MAE_us": 6.774171251509969,
+   "RMSE_us": 11.157281292717988,
+   "skill_MAE": -0.03709710264878163,
+   "skill_RMSE": -0.007309643674020316
+  },
+  "AR(1)": {
+   "MAE_us": 6.683881518127585,
+   "RMSE_us": 10.775810863360867,
+   "skill_MAE": -0.02327412454368427,
+   "skill_RMSE": 0.02713054226255629
+  },
+  "Gradient boosting, lag features": {
+   "MAE_us": 6.678604822961753,
+   "RMSE_us": 10.62547626977567,
+   "skill_MAE": -0.022466284726108787,
+   "skill_RMSE": 0.04070315748334674
+  },
+  "n_forecasts": 5992
+ },
+ "decision_h1": {
+  "bad_qubit_windows": 1121,
+  "windows": 56,
+  "qubit_windows": 5992,
+  "Last calibration below 15 us": {
+   "caught": 827,
+   "missed": 294,
+   "false_exclusions": 297,
+   "recall": 0.7377341659232828,
+   "excluded_per_window": 20.071428571428573,
+   "missed_per_window": 5.25
+  },
+  "Forecast below 15 us": {
+   "caught": 705,
+   "missed": 416,
+   "false_exclusions": 235,
+   "recall": 0.6289027653880463,
+   "excluded_per_window": 16.785714285714285,
+   "missed_per_window": 7.428571428571429
+  },
+  "Forecast 10% bound below 15 us": {
+   "caught": 957,
+   "missed": 164,
+   "false_exclusions": 777,
+   "recall": 0.8537020517395183,
+   "excluded_per_window": 30.964285714285715,
+   "missed_per_window": 2.9285714285714284
+  },
+  "Forecast risk, same number excluded": {
+   "caught": 803,
+   "missed": 318,
+   "false_exclusions": 321,
+   "recall": 0.7163247100802854,
+   "excluded_per_window": 20.071428571428573,
+   "missed_per_window": 5.678571428571429
+  }
+ },
+ "t1_h8": {
+  "Persistence (last calibration)": {
+   "MAE_us": 13.269775615361516,
+   "RMSE_us": 19.71736346137678,
+   "skill_MAE": 0.0,
+   "skill_RMSE": 0.0
+  },
+  "Moving average, 24 h": {
+   "MAE_us": 12.419441967308998,
+   "RMSE_us": 18.34679252927844,
+   "skill_MAE": 0.06408048430511093,
+   "skill_RMSE": 0.06951086207763402
+  },
+  "Exponential smoothing": {
+   "MAE_us": 12.78709267731761,
+   "RMSE_us": 19.03064266407982,
+   "skill_MAE": 0.03637461190264113,
+   "skill_RMSE": 0.034828226331686696
+  },
+  "AR(1)": {
+   "MAE_us": 10.749796761332176,
+   "RMSE_us": 15.53505631919017,
+   "skill_MAE": 0.18990365226011297,
+   "skill_RMSE": 0.21211289990059234
+  },
+  "Gradient boosting, lag features": {
+   "MAE_us": 10.906481964814121,
+   "RMSE_us": 16.06601849284339,
+   "skill_MAE": 0.17809597683110556,
+   "skill_RMSE": 0.1851842400575413
+  },
+  "n_forecasts": 5243
+ },
+ "decision_h8": {
+  "bad_qubit_windows": 1000,
+  "windows": 49,
+  "qubit_windows": 5243,
+  "Last calibration below 15 us": {
+   "caught": 411,
+   "missed": 589,
+   "false_exclusions": 537,
+   "recall": 0.411,
+   "excluded_per_window": 19.346938775510203,
+   "missed_per_window": 12.020408163265307
+  },
+  "Forecast below 15 us": {
+   "caught": 319,
+   "missed": 681,
+   "false_exclusions": 224,
+   "recall": 0.319,
+   "excluded_per_window": 11.081632653061224,
+   "missed_per_window": 13.89795918367347
+  },
+  "Forecast 10% bound below 15 us": {
+   "caught": 839,
+   "missed": 161,
+   "false_exclusions": 1747,
+   "recall": 0.839,
+   "excluded_per_window": 52.775510204081634,
+   "missed_per_window": 3.2857142857142856
+  },
+  "Forecast risk, same number excluded": {
+   "caught": 480,
+   "missed": 520,
+   "false_exclusions": 468,
+   "recall": 0.48,
+   "excluded_per_window": 19.346938775510203,
+   "missed_per_window": 10.612244897959183
+  }
+ },
+ "leakage_shuffled_cv_MAE_us": 6.639349263969625,
+ "readout_h1": {
+  "Persistence (last value)": {
+   "MAE_pp": 0.576178043745806,
+   "RMSE_pp": 0.7289380614676753,
+   "skill_MAE": 0.0,
+   "skill_RMSE": 0.0
+  },
+  "Mean of past values": {
+   "MAE_pp": 0.8148435426837387,
+   "RMSE_pp": 1.2248521626788693,
+   "skill_MAE": -0.41422178704752155,
+   "skill_RMSE": -0.6803240596501428
+  },
+  "Moving average, 24 h": {
+   "MAE_pp": 0.48825736017419263,
+   "RMSE_pp": 0.6206000682296882,
+   "skill_MAE": 0.15259290860864794,
+   "skill_RMSE": 0.14862441538565663
+  },
+  "Exponential smoothing": {
+   "MAE_pp": 0.45208124998644345,
+   "RMSE_pp": 0.5720138324865349,
+   "skill_MAE": 0.21537924797098074,
+   "skill_RMSE": 0.21527786416473071
+  }
+ }
+}
