@@ -21,6 +21,7 @@ Usage
   python oq_calibration.py collect --once        # one poll (for cron / Task Scheduler)
   python oq_calibration.py collect --interval-min 30 --hours 168   # loop for 7 days
   python oq_calibration.py flatten               # rebuild data/calibration_long.csv
+  python analyze.py                              # pilot analysis of the collected data
 
 Output (folder ./data)
   raw/<backend>/<UTC>_<source>_<hash>.json   every distinct document (untouched,
@@ -146,7 +147,7 @@ def append_csv(path: Path, rows: Iterable[Mapping[str, Any]], fields: List[str])
 
 
 # --------------------------------------------------------------------------- #
-# Document parsing (generic: we keep every {"value", "unit"} we can find)
+# Document parsing (generic: we keep every {"value", "unit", stderr} we can find)
 # --------------------------------------------------------------------------- #
 def find_timestamps(doc: Any, depth: int = 0, prefix: str = "") -> Dict[str, str]:
     """Collect scalar fields whose name looks like a time (top 3 levels)."""
@@ -162,15 +163,37 @@ def find_timestamps(doc: Any, depth: int = 0, prefix: str = "") -> Dict[str, str
     return found
 
 
+STDERR_KEYS = ("stderr", "std_err", "standard_error", "uncertainty", "sigma", "std", "err")
+
+
 def datum(raw: Any):
+    """(value, unit, standard error or None) from a {"value", "unit", ...} entry."""
     if isinstance(raw, Mapping) and "value" in raw:
         try:
-            return float(raw["value"]), str(raw.get("unit", ""))
+            value = float(raw["value"])
         except (TypeError, ValueError):
             return None
+        se = None
+        for k in STDERR_KEYS:
+            if k in raw:
+                try:
+                    se = float(raw[k])
+                except (TypeError, ValueError):
+                    se = None
+                break
+        return value, str(raw.get("unit", "")), se
     if isinstance(raw, (int, float)) and not isinstance(raw, bool):
-        return float(raw), ""
+        return float(raw), "", None
     return None
+
+
+def document_time(doc: Any) -> str:
+    """The provider's capture time: captured_at if present, else the first time-like field."""
+    ts = find_timestamps(doc)
+    for key, value in ts.items():
+        if key.split(".")[-1] == "captured_at":
+            return value
+    return next(iter(ts.values()), "")
 
 
 def flatten_document(doc: Any) -> List[Dict[str, Any]]:
@@ -189,7 +212,7 @@ def flatten_document(doc: Any) -> List[Dict[str, Any]]:
                 d = datum(raw)
                 if d:
                     rows.append({"kind": "qubit", "target": labels.get(ref, ref),
-                                 "metric": metric, "value": d[0], "unit": d[1]})
+                                 "metric": metric, "value": d[0], "unit": d[1], "stderr": d[2]})
 
     gates = doc.get("gates")
     if isinstance(gates, list):
@@ -205,17 +228,16 @@ def flatten_document(doc: Any) -> List[Dict[str, Any]]:
                 d = datum(raw)
                 if d:
                     rows.append({"kind": f"gate:{name}", "target": target,
-                                 "metric": metric, "value": d[0], "unit": d[1]})
+                                 "metric": metric, "value": d[0], "unit": d[1], "stderr": d[2]})
     return rows
 
 
 LONG_FIELDS = ["collected_at", "source", "backend", "doc_hash", "doc_time",
-               "kind", "target", "metric", "value", "unit"]
+               "kind", "target", "metric", "value", "unit", "stderr"]
 
 
 def rows_for(doc: Mapping[str, Any], backend: str, stamp: str, source: str):
-    ts = find_timestamps(doc)
-    doc_time = next(iter(ts.values()), "")
+    doc_time = document_time(doc)
     h = doc_hash(doc)
     for r in flatten_document(doc):
         yield {"collected_at": stamp, "source": source, "backend": backend,
@@ -248,6 +270,8 @@ def cmd_probe(args) -> None:
         n_q = len({r["target"] for r in rows if r["kind"] == "qubit"})
         print(f"   top-level keys : {sorted(doc.keys()) if isinstance(doc, Mapping) else type(doc)}")
         print(f"   time fields    : {find_timestamps(doc) or 'none found'}")
+        n_se = sum(r["stderr"] is not None for r in rows)
+        print(f"   with stderr    : {n_se} of {len(rows)} values")
         print(f"   qubits w/ data : {n_q}")
         print(f"   metrics        : {metrics}")
         print(f"   saved          : {path or 'identical document already stored'}\n")
